@@ -1,7 +1,4 @@
----
-title: 'PortSwigger: SQL Injection'
 
----
 
 # PortSwigger: SQL Injection
 ## Retrieving hidden data
