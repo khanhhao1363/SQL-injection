@@ -1,8 +1,45 @@
+# Lỗ Hổng SQL Injection
+
+> Tên Tài Liệu: PortSwigger
+
+> Người Thực Hiện: Nguyễn Khánh Hào
+
+> Cập Nhật Lần Cuối: 10/9/2024
+
+# Mục Lục
+
+[Summary](#summary)
+
+[Write-up Lab PortSwigger (MSSQL, MySQL, Oracle)](#write-up-lab-portswigger-(mssql,-mysql,-oracle))
 
 
-# PortSwigger: SQL Injection
-## Retrieving hidden data
-## Lab: SQL injection vulnerability in WHERE clause allowing retrieval of hidden data
+# Summary
+
+SQL Injection là loại lỗ hổng cho phép attacker có thể chèn các câu lệnh SQL độc hại và thao túng cơ sở dữ liệu, từ đó có thể trích xuất được credentials của mục tiêu hoặc cũng có thể sửa đổi hoặc xóa các dữ liệu nhạy cảm trong hệ thống.
+
+SQL Injection bao gồm:
+
+`In-band SQLi`:
+
+Error-based SQLi: phụ thuộc vào kết quả lỗi trả về.
+
+Union-based SQLi: gợp các câu truy vấn lại với nhau để có thể truy xuất database.
+
+`Blind SQLi`:
+
+Boolean-based SQLi: dạng tấn công này dựa theo kết quả trả về của phản hồi.
+
+Time-based SQLi: dựa theo thời gian trả về của phản hồi.
+
+`Out-of-band SQLi`:
+
+có thể nhận dữ liệu từ cơ sở dữ liệu thông qua các yêu cầu HTTP, DNS.
+
+
+# Write-up Lab PortSwigger (MSSQL, MySQL, Oracle)
+
+# 1. SQL injection vulnerability in WHERE clause allowing retrieval of hidden data
+
 ![image](https://hackmd.io/_uploads/S1TL5pDOA.png)
 Nhìn vào description có thể biết được chức năng lọc danh sách của sản phẩm bị SQLi trong các parameter.
 
@@ -27,7 +64,7 @@ Nếu response về status 200 thì giả thuyết này khả thi và chắc ch�
 
 ![image](https://hackmd.io/_uploads/S1XPgAv_C.png)
 
-Với `--+-` mình đã vô hiệu hóa toàn bộ những câu lệnh phía sau câu truy vấn, cho bạn nào chưa biết thì dấu `+` trong burp tượng trưng cho nút space nha (tức là endcode lại á) =))).
+Với `--+-` mình đã vô hiệu hóa toàn bộ những câu lệnh phía sau câu truy vấn.
 
 Để solve được lab này thì chúng ta cần list ra tất cả sản phẩm.
 
@@ -37,9 +74,7 @@ Final payload: `category=Accessories'+or+2=2--+-`
 ![image](https://hackmd.io/_uploads/Sks5b0wu0.png)
 ![image](https://hackmd.io/_uploads/SJcJzAPuA.png)
 
-## Subverting application logic
-
-## Lab: SQL injection vulnerability allowing login bypass
+# 2. SQL injection vulnerability allowing login bypass
 
 ![image](https://hackmd.io/_uploads/Sy4GX0vuA.png)
 
@@ -71,8 +106,7 @@ Vì luôn trả về `TRUE` nên câu query sẽ được thực thi.
 
 Thật ra trong trường hợp này cũng không cần thiết sử dụng `' or 1=1-- -`, mà chỉ cần `'-- -` comment cho tất cả câu truy vấn phía sau đó trở nên vô nghĩa là chúng ta có thể bypass được, vì tài khoản administrator đã tồn tại sẵn nên không cần sử dụng câu điều kiện `OR` để so sánh `1=1` và kiểm tra xem password có đúng không.
 
-## Examining the database
-## Lab: SQL injection attack, querying the database type and version on Oracle
+# 3. SQL injection attack, querying the database type and version on Oracle
 
 ![image](https://hackmd.io/_uploads/ryUTfyOOC.png)
 
@@ -99,7 +133,7 @@ Final payload: ``'+UNION+SELECT+BANNER,+NULL+FROM+v$version--``
 
 ![image](https://hackmd.io/_uploads/HJyFhJdu0.png)
 
-## Lab: SQL injection attack, querying the database type and version on MySQL and Microsoft
+# 4. SQL injection attack, querying the database type and version on MySQL and Microsoft
 
 Đối với lab này thì cũng tương tự như bài trên, target là select ra version của DB.
 
@@ -115,7 +149,7 @@ Với MySQL và Microsoft thì chúng ta sẽ sử dụng hàm version() hoặc 
 
 ![image](https://hackmd.io/_uploads/HJWzBldOR.png)
 
-## Lab: SQL injection attack, listing the database contents on non-Oracle databases
+# 5. SQL injection attack, listing the database contents on non-Oracle databases
 
 ![image](https://hackmd.io/_uploads/BJ2kcCddA.png)
 
@@ -126,8 +160,6 @@ Với những bài lab SQLi này thì mình sẽ exploit theo hướng blackbox,
 Đầu tiên mình sẽ đi tìm số column trong database bằng payload: `union select null, null-- -`
 
 ![image](https://hackmd.io/_uploads/Bkap1yFuR.png)
-
-
 
 Null tới chừng nào server không còn status 500 Internal Server Error thì đó chính là số columns 😋 . Có thể thấy trong database tồn tại 2 columns.
   
@@ -173,7 +205,7 @@ Giờ chúng ta đã có credentials của admin, login và solve bài lab thôi
 
 ![image](https://hackmd.io/_uploads/B17mEkKd0.png)
 
-## Lab: SQL injection attack, listing the database contents on Oracle
+# 6. SQL injection attack, listing the database contents on Oracle
 
 Tương tự như lab trên, trích xuất credentials của admin và login để solve bài lab. Chỉ khác biệt đây là oracle.
 
@@ -213,8 +245,7 @@ Step cuối là trích xuất credentials của admin và solve.
 
 ![image](https://hackmd.io/_uploads/SJVE1lYOC.png)
 
-## UNION attacks
-## Lab: SQL injection UNION attack, determining the number of columns returned by the query
+# 7. SQL injection UNION attack, determining the number of columns returned by the query
 
 ![image](https://hackmd.io/_uploads/Hk4H0MtdA.png)
 
@@ -236,7 +267,7 @@ Payload: `' union select null, null, null-- -`
 
 ![image](https://hackmd.io/_uploads/HyMSX7Y_A.png)
 
-## Lab: SQL injection UNION attack, finding a column containing text
+## 8. SQL injection UNION attack, finding a column containing text
 
 ![image](https://hackmd.io/_uploads/rk7_EXFdC.png)
 
@@ -262,7 +293,7 @@ Final payload: `' union select null, 'L0niyj', null-- -`
 
 Vậy là columns số 2 có thể chèn một string bất kì vào. Các bạn chú ý vì đây là một chuỗi nên phải có dấu `''` nha.
 
-## Lab: SQL injection UNION attack, retrieving data from other tables
+# 9. SQL injection UNION attack, retrieving data from other tables
 
 ![image](https://hackmd.io/_uploads/BkRu57YOR.png)
 
@@ -284,7 +315,7 @@ Tiến hành login và solve thôi :+1: .
 
 ![image](https://hackmd.io/_uploads/B1Rq3XY_A.png)
 
-## Lab: SQL injection UNION attack, retrieving multiple values in a single column
+# 10. SQL injection UNION attack, retrieving multiple values in a single column
 
 ![image](https://hackmd.io/_uploads/BkcqyEtdR.png)
 
@@ -316,12 +347,15 @@ Final Payload: `' union select null, username||'~'||password from users-- -`
 
 ![image](https://hackmd.io/_uploads/HkKZEEYdA.png)
 
-Ây daa! tiến hành login và solve thôi. 
+tiến hành login và solve thôi. 
 
 ![image](https://hackmd.io/_uploads/Ska7EVKOA.png)
 
-## Blind SQL injection
-## Lab: Blind SQL injection with conditional responses
+# Khuyến Nghị Khắc Phục
+
+Sử dụng Prepared Statements để an toàn trước các cuộc tấn công SQL Injection.
+
+
 
 
 
