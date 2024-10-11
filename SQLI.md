@@ -353,9 +353,13 @@ tiến hành login và solve thôi.
 
 # Khuyến Nghị Khắc Phục
 
-Sử dụng Prepared Statements để an toàn trước các cuộc tấn công SQL Injection.
+1. Sử dụng Prepared Statements để an toàn trước các cuộc tấn công SQL Injection.
 
+2. Implement việc lọc và validate input của người dùng.
 
+3. Hạn chế quyền hạn của database.
+
+4. Triển khai Web Application Firewall (WAF) để phát hiện và chặn các tấn công SQL Injection.
 
 
 
